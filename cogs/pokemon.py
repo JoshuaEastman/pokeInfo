@@ -1,8 +1,9 @@
 import os
-import requests
+import discord
 from discord.ext import commands
+from utils.pokemon import get_pokemon_data
 
-class Pokemon(commands.Cog):
+class PokemonInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel_id = int(os.getenv('DEV_CHANNEL_ID'))
@@ -10,51 +11,38 @@ class Pokemon(commands.Cog):
     # Command to get abilities of a Pokémon
     # Returns name of pokemon and shows standard and hidden abilities   
     @commands.command(name="ability", help="Enter !ability and name a pokemon to get available abilities. Example: !ability pikachu")
-    async def pokemon(self, ctx, arg):
-        CHANNEL = os.getenv('DEV_CHANNEL_ID')
-        # Command only allowed in specific channel
+    async def pokemon(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
-            arg = arg.lower() # Ensure lowercase for API call
+            print(f"'Ability' command used in {channel.name}")
 
-            # Url for request
-            url = f"https://pokeapi.co/api/v2/pokemon/{arg}"
-
-            # Request data from API
-            try:
-                response = requests.get(url)
-                
-                # Check if response is valid
-                if response.status_code == 404:
-                    await channel.send("Pokémon not found. Maybe in a future generation?")
-                    return
-                
-                # Parse JSON
-                data = response.json()
-
-                # Init empty lists
-                standard = []
-                hidden = []
-
-                # Parse Abilities and append them to respective lists
-                for ability in data['abilities']:
-                    if ability['is_hidden'] == False:
-                        standard.append(ability)
-                    elif ability['is_hidden'] == True:
-                        hidden.append(ability)
+            """Fetch and display information about a Pokemon"""
+            pokemon = await get_pokemon_data(pokemon_name)
+            if not pokemon:
+                await ctx.send(f"Pokemon '{pokemon_name}' not found.")
+                return
             
-                # Format ability lists
-                default_abilities = ("### Standard:\n" + "\n".join([f"`{ability['ability']['name']}`" for ability in standard]))
-                hidden_abilities = ("### Hidden:\n" + "\n".join([f"`{ability['ability']['name']}`" for ability in hidden]))
+            # Create a discord embed
+            embed = discord.Embed(
+                title=f"#{pokemon['id']} - {pokemon['name']}",
+                color=discord.Color.blue(),
+            )
+            embed.add_field(name="Types", value=", ".join(pokemon["types"]), inline=True)
+            embed.add_field(name="Height", value=f"{pokemon['height']} m", inline=True)
+            embed.add_field(name="Weight", value=f"{pokemon['weight']} kg", inline=True)
+            embed.add_field(name="Abilities", value=", ".join(pokemon["abilities"]), inline=False)
 
-                # Send message
-                await channel.send(f"## Abilities for {arg.capitalize()}\n\n{default_abilities}\n{hidden_abilities}")
+            # Only show first 10 moves
+            moves_preview = ", ".join(pokemon["moves"][:10]) + "..."
+            embed.add_field(name="Moves (Sample)", value=moves_preview, inline=False)
 
-            except:
-                await channel.send("An error occurred. Please try again.") # Generic error message
-        else:
-            await ctx.send("This command is not allowed in this channel.") # Feedback for user
-            print(ctx.channel.id)
+
+            # Pokemon sprite
+            sprite_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{pokemon['id']}.png"
+            embed.set_thumbnail(url=sprite_url)
+
+            await ctx.send(embed=embed)
+
 
 async def setup(bot):
-    await bot.add_cog(Pokemon(bot))
+    await bot.add_cog(PokemonInfo(bot))
