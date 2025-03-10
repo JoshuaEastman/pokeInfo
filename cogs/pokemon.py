@@ -10,11 +10,11 @@ class PokemonInfo(commands.Cog):
 
     # Command to get abilities of a Pokémon
     # Returns name of pokemon and shows standard and hidden abilities   
-    @commands.command(name="pokemon", help="Enter !ability and name a pokemon to get available abilities. Example: !ability pikachu")
+    @commands.command(name="pokemon", help="Enter !pokemon and name a pokemon to get available abilities. Example: !ability pikachu")
     async def pokemon(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
-            print(f"'Ability' command used in {channel.name}")
+            print(f"'pokemon' command used in {channel.name}")
 
             # Fetch and display information about a Pokemon
             pokemon = await get_pokemon_data(pokemon_name)
