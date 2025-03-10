@@ -10,23 +10,39 @@ class PokemonInfo(commands.Cog):
 
     # Command to get abilities of a Pokémon
     # Returns name of pokemon and shows standard and hidden abilities   
-    @commands.command(name="ability", help="Enter !ability and name a pokemon to get available abilities. Example: !ability pikachu")
+    @commands.command(name="pokemon", help="Enter !ability and name a pokemon to get available abilities. Example: !ability pikachu")
     async def pokemon(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
             print(f"'Ability' command used in {channel.name}")
 
-            """Fetch and display information about a Pokemon"""
+            # Fetch and display information about a Pokemon
             pokemon = await get_pokemon_data(pokemon_name)
             if not pokemon:
                 await ctx.send(f"Pokemon '{pokemon_name}' not found.")
                 return
+
+            # Create the Serebii URL dynamically
+            gen = pokemon["generation"]
+            match gen:
+                case "I" | "II" | "III" | "IV" | "V" | "VI":
+                    serebii_url = f"https://www.serebii.net/pokedex-xy/{pokemon['id']:03d}.shtml"
+                case "VII":
+                    serebii_url = f"https://www.serebii.net/pokedex-sm/{pokemon['id']:03d}.shtml"
+                case "VIII":
+                    serebii_url = f"https://www.serebii.net/pokedex-swsh/{pokemon['id']:03d}.shtml"
+                case "IX":
+                    serebii_url = f"https://www.serebii.net/pokedex-sv/{pokemon['id']:03d}.shtml"
+                case _:
+                    serebii_url = f"https://www.serebii.net" # Default to Serebii homepage
             
             # Create a discord embed
             embed = discord.Embed(
                 title=f"#{pokemon['id']} - {pokemon['name']}",
+                url=serebii_url,
                 color=discord.Color.blue(),
             )
+            embed.add_field(name="Generation", value=f"Gen {pokemon['generation']}", inline=True)
             embed.add_field(name="Types", value=", ".join(pokemon["types"]), inline=True)
             embed.add_field(name="Height", value=f"{pokemon['height']} m", inline=True)
             embed.add_field(name="Weight", value=f"{pokemon['weight']} kg", inline=True)
@@ -36,10 +52,12 @@ class PokemonInfo(commands.Cog):
             moves_preview = ", ".join(pokemon["moves"][:10]) + "..."
             embed.add_field(name="Moves (Sample)", value=moves_preview, inline=False)
 
-
             # Pokemon sprite
             sprite_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{pokemon['id']}.png"
             embed.set_thumbnail(url=sprite_url)
+
+            # Serebii URL
+            embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
 
             await ctx.send(embed=embed)
 
