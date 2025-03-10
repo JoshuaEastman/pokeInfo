@@ -6,7 +6,7 @@ from utils.pokemon import get_pokemon_data
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
+        self.channel_id = int(os.getenv('DEV_CHANNEL_ID'))
 
     # Command to get abilities of a Pokémon
     # Returns name of pokemon and shows standard and hidden abilities   
