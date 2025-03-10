@@ -1,66 +1,39 @@
 import os
 import discord
-import random
-from dotenv import load_dotenv
 from discord.ext import commands
-import requests
+
+dotenv_path = '.env'
+if os.path.exists(".env"):
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path)
+
+TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Discord Bot Config
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix='!', intents=intents)
 intents.message_content = True
+intents.guilds = True
+intents.members = True
 
-# Load Environment Variables
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-CHANNEL = os.getenv('CHANNEL_ID')
+bot = commands.Bot(command_prefix='!', intents=intents)
 
-# Command to get abilities of a Pokémon
-# Returns name of pokemon and shows standard and hidden abilities
-@bot.command(name="ability", help="Enter !ability and name a pokemon to get available abilities. Example: !ability pikachu")
-async def pokemon(ctx, arg):
-    # Command only allowed in specific channel
-    if ctx.channel.id == int(CHANNEL):
-        channel = bot.get_channel(int(CHANNEL))
-        arg = arg.lower() # Ensure lowercase for API call
+# Load Cogs (command categories)
+COG_FOLDER = "cogs"
 
-        # Url for request
-        url = f"https://pokeapi.co/api/v2/pokemon/{arg}"
+async def load_cogs():
+    for filename in os.listdir(COG_FOLDER):
+        if filename.endswith('.py') and not filename.startswith('_'):
+            await bot.load_extension(f'{COG_FOLDER}.{filename[:-3]}')
 
-        # Request data from API
-        try:
-            response = requests.get(url)
-            
-            # Check if response is valid
-            if response.status_code == 404:
-                await channel.send("Pokémon not found. Maybe in a future generation?")
-                return
-            
-            # Parse JSON
-            data = response.json()
+@bot.event
+async def on_ready():
+    await bot.change_presence(status=discord.Status.invisible)
+    print(f'{bot.user.name} has connected to Discord! Bot is invisible and offline.')
 
-            # Init empty lists
-            standard = []
-            hidden = []
-
-            # Parse Abilities and append them to respective lists
-            for ability in data['abilities']:
-                if ability['is_hidden'] == False:
-                    standard.append(ability)
-                elif ability['is_hidden'] == True:
-                    hidden.append(ability)
-        
-            # Format ability lists
-            default_abilities = ("### Standard:\n" + "\n".join([f"`{ability['ability']['name']}`" for ability in standard]))
-            hidden_abilities = ("### Hidden:\n" + "\n".join([f"`{ability['ability']['name']}`" for ability in hidden]))
-
-            # Send message
-            await channel.send(f"## Abilities for {arg.capitalize()}\n\n{default_abilities}\n{hidden_abilities}")
-
-        except:
-            await channel.send("An error occurred. Please try again.") # Generic error message
-    else:
-        await ctx.send("This command is not allowed in this channel.") # Feedback for user
+async def setup_hook():
+    await load_cogs()
 
 # Start Bot
-bot.run(TOKEN)
+if __name__ == "__main__":
+    bot.setup_hook = setup_hook
+    bot.run(TOKEN)
