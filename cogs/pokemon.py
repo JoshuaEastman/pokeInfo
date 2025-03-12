@@ -6,12 +6,12 @@ from utils.pokemon import get_pokemon_data
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = int(os.getenv('DEV_CHANNEL_ID'))
+        self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
 
     # Command to get abilities of a Pokémon
     # Returns name of pokemon and shows standard and hidden abilities   
-    @commands.command(name="pokemon", help="Enter !pokemon and name a pokemon to get available abilities. Example: !ability pikachu")
-    async def pokemon(self, ctx, *, pokemon_name):
+    @commands.command(name="pokeinfo", help="Enter !pokeinfo and name a pokemon to get a brief description of that pokemon. Example: !pokeinfo pikachu")
+    async def pokeinfo(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
             print(f"'pokemon' command used in {channel.name}")
