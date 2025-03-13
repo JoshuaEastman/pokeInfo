@@ -1,4 +1,4 @@
 discord.py
 aiohttp
 python-dotenv
-PIL
+pillow
