@@ -13,6 +13,7 @@ class PokemonInfo(commands.Cog):
 
     # Command to get abilities of a Pokémon 
     @commands.command(name="pokeinfo", help=" - Enter ~pokeinfo and name a pokemon to get a brief description of that pokemon. Example: ~pokeinfo pikachu")
+    @commands.has_permissions(manage_messages=True)
     async def pokeinfo(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
