@@ -14,5 +14,9 @@ class General(commands.Cog):
     async def roll(self, ctx):
         await ctx.send(f'You rolled a {random.randint(1, 20)}')
 
+    # @commands.command(name='clear_channel', help='Clears the channel of messages')
+    # async def clear_channel(self, ctx):
+    #     await ctx.channel.purge()
+
 async def setup(bot):
     await bot.add_cog(General(bot))
