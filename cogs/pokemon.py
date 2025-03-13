@@ -2,11 +2,12 @@ import os
 import discord
 from discord.ext import commands
 from utils.pokemon import get_pokemon_data
+from utils.pokemon import merge_sprites
 
 # Helper function to map Pokémon names to the API naming convention
 def match_api_naming(map_string):
         trans_map = str.maketrans({"♂": "-m", "♀": "-f", "é": "e"})
-        mapped_string = map_string.transslate(trans_map)
+        mapped_string = map_string.translate(trans_map)
         return mapped_string
 
 class PokemonInfo(commands.Cog):
@@ -23,7 +24,6 @@ class PokemonInfo(commands.Cog):
     async def pokeinfo(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
-            print(f"'pokemon' command used in {channel.name}")
 
             # Match the Pokémon name to the API naming convention
             pokemon_api_name = match_api_naming(pokemon_name)
@@ -47,6 +47,11 @@ class PokemonInfo(commands.Cog):
                     serebii_url = f"https://www.serebii.net/pokedex-sv/{pokemon['id']:03d}.shtml"
                 case _:
                     serebii_url = f"https://www.serebii.net" # Default to Serebii homepage
+
+            # Merge sprites
+            merged_image = await merge_sprites(pokemon["id"])
+            file = discord.File(merged_image, filename="sprite.png")
+
             
             # Create a discord embed
             embed = discord.Embed(
@@ -65,13 +70,12 @@ class PokemonInfo(commands.Cog):
             embed.add_field(name="Moves (Sample)", value=moves_preview, inline=False)
 
             # Pokemon sprite
-            sprite_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{pokemon['id']}.png"
-            embed.set_thumbnail(url=sprite_url)
+            embed.set_image(url="attachment://sprite.png")
 
             # Serebii URL
             embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
 
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, file=file)
 
 
 async def setup(bot):
