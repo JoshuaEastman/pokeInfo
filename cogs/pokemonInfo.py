@@ -13,6 +13,7 @@ class PokemonInfo(commands.Cog):
 
     # Command to get abilities of a Pokémon 
     @commands.command(name="pokeinfo", help=" - Enter ~pokeinfo and name a pokemon to get a brief description of that pokemon. Example: ~pokeinfo pikachu")
+    @commands.has_permissions(manage_messages=True)
     async def pokeinfo(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
@@ -74,6 +75,7 @@ class PokemonInfo(commands.Cog):
             embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
 
             await channel.send(embed=embed, file=file, delete_after=(60*5)) # Delete message after 5 minutes
+            await channel.send("This message will self-destruct in 5 minutes.", delete_after=(60*5))
             await ctx.message.delete()
 
 
