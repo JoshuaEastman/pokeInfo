@@ -1,7 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-from utils.pokemon import get_pokemon_data, merge_sprites, match_api_naming
+from utils.pokemonInfoUtil import get_pokemon_data, merge_sprites, match_api_naming
 
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
@@ -11,9 +11,8 @@ class PokemonInfo(commands.Cog):
         else:
             self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
 
-    # Command to get abilities of a Pokémon
-    # Returns name of pokemon and shows standard and hidden abilities   
-    @commands.command(name="pokeinfo", help="Enter ~pokeinfo and name a pokemon to get a brief description of that pokemon. Example: ~pokeinfo pikachu")
+    # Command to get abilities of a Pokémon 
+    @commands.command(name="pokeinfo", help=" - Enter ~pokeinfo and name a pokemon to get a brief description of that pokemon. Example: ~pokeinfo pikachu")
     async def pokeinfo(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
@@ -74,7 +73,8 @@ class PokemonInfo(commands.Cog):
             # Serebii URL
             embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
 
-            await channel.send(embed=embed, file=file)
+            await channel.send(embed=embed, file=file, delete_after=(60*5)) # Delete message after 5 minutes
+            await ctx.message.delete()
 
 
 async def setup(bot):
