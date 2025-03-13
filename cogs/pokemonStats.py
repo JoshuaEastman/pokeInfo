@@ -3,6 +3,8 @@ import discord
 from discord.ext import commands
 from utils.pokemonInfoUtil import get_pokemon_data, match_api_naming, generate_stat_bar
 
+min_max_text = "Min values are calculated with hindering nature, 0 IVs, and 0 EVs. Max values are calculated with beneficial nature, 31 IVs, and 252 EVs."
+
 class PokemonStats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -44,7 +46,7 @@ class PokemonStats(commands.Cog):
                 )
 
             embed.add_field(name="", value=stats_text, inline=False)
-            embed.add_field(name="", value="*Min/Max Stats are calculated for level 100 with 0 EVs and IVs.*", inline=False)
+            embed.add_field(name="", value=f"*{min_max_text}*", inline=False)
 
             embed.set_thumbnail(url=f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{pokemon['id']}.png")
 
