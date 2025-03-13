@@ -25,10 +25,20 @@ async def get_pokemon_data(pokemon_name):
                 "height": data["height"] / 10,  # Convert dm to meters
                 "weight": data["weight"] / 10,  # Convert hg to kg
                 "types": [t["type"]["name"].capitalize() for t in data["types"]],
-                "abilities": [a["ability"]["name"].replace("-", " ").capitalize() for a in data["abilities"]],
+                "abilities": [],
+                "hidden_abilities": [],
                 "moves": [m["move"]["name"].replace("-", " ").capitalize() for m in data["moves"]],
                 "generation": species_data["generation"]["name"].replace("generation-", "").upper(),
             }
+
+            # Check for hidden abilities
+            for ability in data["abilities"]:
+                ability_name = ability["ability"]["name"].replace("-", " ").capitalize()
+                is_hidden = ability["is_hidden"]
+                if is_hidden:
+                    pokemon_info["hidden_abilities"].append(ability_name)
+                else:
+                    pokemon_info["abilities"].append(ability_name)
 
             return pokemon_info
         

@@ -6,8 +6,15 @@ from utils.pokemon import merge_sprites
 
 # Helper function to map Pokémon names to the API naming convention
 def match_api_naming(map_string):
-        trans_map = str.maketrans({"♂": "-m", "♀": "-f", "é": "e"})
-        mapped_string = map_string.translate(trans_map)
+        if map_string.lower() == "zygarde" or map_string.lower() == "zygarde-50" or map_string.lower() == "zygarde-10" or map_string.lower() == "zygarde-100":
+            mapped_string = "718"
+        elif map_string.lower() == "mr. mime":
+            mapped_string = "mr-mime"
+        elif map_string.lower() == "mime jr." or map_string.lower() == "mime jr":
+            mapped_string = "mime-jr"
+        else:
+            trans_map = str.maketrans({"♂": "-m", "♀": "-f", "é": "e"})
+            mapped_string = map_string.translate(trans_map)
         return mapped_string
 
 class PokemonInfo(commands.Cog):
@@ -63,7 +70,13 @@ class PokemonInfo(commands.Cog):
             embed.add_field(name="Types", value=", ".join(pokemon["types"]), inline=True)
             embed.add_field(name="Height", value=f"{pokemon['height']} m", inline=True)
             embed.add_field(name="Weight", value=f"{pokemon['weight']} kg", inline=True)
+            
+            # Add regular abilities
             embed.add_field(name="Abilities", value=", ".join(pokemon["abilities"]), inline=False)
+
+            # Add hidden abilities
+            if pokemon["hidden_abilities"]:
+                embed.add_field(name="Hidden Abilities", value=", ".join(pokemon["hidden_abilities"]), inline=False)
 
             # Only show first 10 moves
             moves_preview = ", ".join(pokemon["moves"][:10]) + "..."
@@ -75,7 +88,7 @@ class PokemonInfo(commands.Cog):
             # Serebii URL
             embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
 
-            await ctx.send(embed=embed, file=file)
+            await channel.send(embed=embed, file=file)
 
 
 async def setup(bot):
