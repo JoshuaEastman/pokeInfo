@@ -1,21 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-from utils.pokemon import get_pokemon_data
-from utils.pokemon import merge_sprites
-
-# Helper function to map Pokémon names to the API naming convention
-def match_api_naming(map_string):
-        if map_string.lower() == "zygarde" or map_string.lower() == "zygarde-50" or map_string.lower() == "zygarde-10" or map_string.lower() == "zygarde-100":
-            mapped_string = "718"
-        elif map_string.lower() == "mr. mime":
-            mapped_string = "mr-mime"
-        elif map_string.lower() == "mime jr." or map_string.lower() == "mime jr":
-            mapped_string = "mime-jr"
-        else:
-            trans_map = str.maketrans({"♂": "-m", "♀": "-f", "é": "e"})
-            mapped_string = map_string.translate(trans_map)
-        return mapped_string
+from utils.pokemon import get_pokemon_data, merge_sprites, match_api_naming
 
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
