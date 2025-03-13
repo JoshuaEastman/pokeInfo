@@ -7,5 +7,7 @@ services:
     restart: always
     env_file:
       - .env
+    environemnt:
+      - BOT_ENV=production
     working_dir: /app
     command: python bot.py
