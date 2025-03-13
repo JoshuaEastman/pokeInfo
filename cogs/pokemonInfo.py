@@ -73,7 +73,8 @@ class PokemonInfo(commands.Cog):
             # Serebii URL
             embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
 
-            await channel.send(embed=embed, file=file)
+            await channel.send(embed=embed, file=file, delete_after=(60*5)) # Delete message after 5 minutes
+            await ctx.message.delete()
 
 
 async def setup(bot):
