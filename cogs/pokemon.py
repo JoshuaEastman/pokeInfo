@@ -3,6 +3,12 @@ import discord
 from discord.ext import commands
 from utils.pokemon import get_pokemon_data
 
+# Helper function to map Pokémon names to the API naming convention
+def match_api_naming(map_string):
+        trans_map = str.maketrans({"♂": "-m", "♀": "-f", "é": "e"})
+        mapped_string = map_string.transslate(trans_map)
+        return mapped_string
+
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -19,8 +25,11 @@ class PokemonInfo(commands.Cog):
             channel = self.bot.get_channel(self.channel_id)
             print(f"'pokemon' command used in {channel.name}")
 
+            # Match the Pokémon name to the API naming convention
+            pokemon_api_name = match_api_naming(pokemon_name)
+
             # Fetch and display information about a Pokemon
-            pokemon = await get_pokemon_data(pokemon_name)
+            pokemon = await get_pokemon_data(pokemon_api_name)
             if not pokemon:
                 await ctx.send(f"Pokemon '{pokemon_name}' not found.")
                 return
