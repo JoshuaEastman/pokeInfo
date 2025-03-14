@@ -57,3 +57,4 @@ class PokemonStats(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(PokemonStats(bot))
+    print("PokemonStats cog is loaded")

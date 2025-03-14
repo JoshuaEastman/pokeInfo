@@ -1,23 +1,25 @@
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import discord
 import aiohttp
 import io
+import re
 
 POKEAPI_BASE_URL = "https://pokeapi.co/api/v2/pokemon"
-SPECIES_URL = "https://pokeapi.co/api/v2/pokemon-species"
 
 # Helper function to map Pokémon names to the API naming convention
 def match_api_naming(map_string):
-        if map_string.lower() == "zygarde" or map_string.lower() == "zygarde-50" or map_string.lower() == "zygarde-10" or map_string.lower() == "zygarde-100":
-            mapped_string = "718"
-        elif map_string.lower() == "mr. mime":
-            mapped_string = "mr-mime"
-        elif map_string.lower() == "mime jr." or map_string.lower() == "mime jr":
-            mapped_string = "mime-jr"
-        else:
-            trans_map = str.maketrans({"♂": "-m", "♀": "-f", "é": "e"})
-            mapped_string = map_string.translate(trans_map)
-        return mapped_string
+    # Regex pattern to match spaces and dots
+    # 1. Replaces spaces with hyphens.
+    # 2. Removes or replaces dots with hyphens.
+    map_string = re.sub(r'\s+', '-', map_string)  # Replace one or more spaces with a single hyphen
+    map_string = re.sub(r'\.+', '', map_string)   # Remove any dots (you could replace with hyphen if needed)
+    
+    # Handle gender symbols and accented characters (e.g., '♂' -> '-m', 'é' -> 'e')
+    map_string = re.sub(r'♂', '-m', map_string)  # Replace male symbol
+    map_string = re.sub(r'♀', '-f', map_string)  # Replace female symbol
+    map_string = re.sub(r'é', 'e', map_string)   # Replace accented 'é' with 'e'
+
+    return map_string.lower()  # Convert to lowercase for consistency
 
 def calculate_min_max_stat(base_stat, is_hp=False):
     """Calculate min and max stat values for level 100."""
@@ -61,9 +63,20 @@ async def get_pokemon_data(pokemon_name):
             
             data = await response.json()
 
-            # Fetch generation of pokemon
-            async with session.get(f"{SPECIES_URL}/{pokemon_name.lower()}") as species_response:
+            # Fetch species data directly from base data
+            species_url = data["species"]["url"]
+
+            async with session.get(species_url) as species_response:
+                if species_response.status != 200:
+                    return None # Species not found
+                
                 species_data = await species_response.json()
+
+            # Parse varieties
+            varieties = [
+                variety["pokemon"]["name"].capitalize()
+                for variety in species_data.get("varieties", [])
+            ]
 
             # Parse response for stats data
             stats = {
@@ -86,6 +99,7 @@ async def get_pokemon_data(pokemon_name):
                 "hidden_abilities": [],
                 "moves": [m["move"]["name"].replace("-", " ").capitalize() for m in data["moves"]],
                 "generation": species_data["generation"]["name"].replace("generation-", "").upper(),''
+                "varieties": varieties,
                 "stats": {
                     stat: {
                         "value": value,
@@ -109,33 +123,43 @@ async def get_pokemon_data(pokemon_name):
             return pokemon_info
         
 async def merge_sprites(pokemon_id):
-    """Merge regular and shiny sprites of a Pokemon"""
-    sprite_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{pokemon_id}.png"
-    shiny_sprite_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/{pokemon_id}.png"
+    try:
+        """Merge regular and shiny sprites of a Pokemon"""
+        sprite_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{pokemon_id}.png"
+        shiny_sprite_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/{pokemon_id}.png"
 
-    async with aiohttp.ClientSession() as session:
-        # Fetch regular sprite
-        async with session.get(sprite_url) as response:
-            regular_sprite = Image.open(io.BytesIO(await response.read()))
-        # Fetch shiny sprite
-        async with session.get(shiny_sprite_url) as response:
-            shiny_sprite = Image.open(io.BytesIO(await response.read()))
+        async with aiohttp.ClientSession() as session:
+            # Fetch regular sprite
+            async with session.get(sprite_url) as response:
+                regular_sprite = Image.open(io.BytesIO(await response.read()))
+            # Fetch shiny sprite
+            async with session.get(shiny_sprite_url) as response:
+                shiny_sprite = Image.open(io.BytesIO(await response.read()))
 
-    # Resize images to make the consistent in size
-    regular_sprite = regular_sprite.resize((200, 200))
-    shiny_sprite = shiny_sprite.resize((200, 200))
+        # Resize images to make the consistent in size
+        regular_sprite = regular_sprite.resize((200, 200))
+        shiny_sprite = shiny_sprite.resize((200, 200))
 
-    # Create new blank image
-    combined_width = regular_sprite.width + shiny_sprite.width
-    combined_image = Image.new("RGBA", (combined_width, regular_sprite.height))
+        # Create new blank image
+        combined_width = regular_sprite.width + shiny_sprite.width
+        combined_image = Image.new("RGBA", (combined_width, regular_sprite.height))
 
-    # Combine images
-    combined_image.paste(regular_sprite, (0, 0))
-    combined_image.paste(shiny_sprite, (regular_sprite.width, 0))
+        # Combine images
+        combined_image.paste(regular_sprite, (0, 0))
+        combined_image.paste(shiny_sprite, (regular_sprite.width, 0))
 
-    # Save image to buffer as BytesIO object
-    img_bytes = io.BytesIO()
-    combined_image.save(img_bytes, format="PNG")
-    img_bytes.seek(0)
+        # Save image to buffer as BytesIO object
+        img_bytes = io.BytesIO()
+        combined_image.save(img_bytes, format="PNG")
+        img_bytes.seek(0)
 
-    return img_bytes
+        return img_bytes
+    
+    except UnidentifiedImageError:
+        print("Error: Failed to identify image format. Check the image url or the response data.")
+        return None
+    except Exception as e:
+        print(f"Error: An error occurred while processing the sprites: {e}")
+        return None
+
+    
