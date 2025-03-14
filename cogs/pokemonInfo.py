@@ -43,9 +43,11 @@ class PokemonInfo(commands.Cog):
 
             # Merge sprites
             merged_image = await merge_sprites(pokemon["id"])
-            file = discord.File(merged_image, filename="sprite.png")
+            if merged_image != None:
+                file = discord.File(merged_image, filename="sprite.png")
+            else:
+                file = None
 
-            
             # Create a discord embed
             embed = discord.Embed(
                 title=f"#{pokemon['id']} - {pokemon['name']}",
@@ -58,18 +60,24 @@ class PokemonInfo(commands.Cog):
             embed.add_field(name="Weight", value=f"{pokemon['weight']} kg", inline=True)
             
             # Add regular abilities
-            embed.add_field(name="Abilities", value=", ".join(pokemon["abilities"]), inline=False)
+            embed.add_field(name="Abilities", value=", ".join(pokemon["abilities"]), inline=True)
 
             # Add hidden abilities
             if pokemon["hidden_abilities"]:
-                embed.add_field(name="Hidden Abilities", value=", ".join(pokemon["hidden_abilities"]), inline=False)
+                embed.add_field(name="Hidden Abilities", value=", ".join(pokemon["hidden_abilities"]), inline=True)
+
+            # Display Pokémon Varieties
+            if pokemon["varieties"]:
+                varieties_display = ", ".join(pokemon["varieties"])
+                embed.add_field(name="Varieties", value=varieties_display, inline=False)
 
             # Only show first 10 moves
             moves_preview = ", ".join(pokemon["moves"][:10]) + "..."
             embed.add_field(name="Moves (Sample)", value=moves_preview, inline=False)
 
             # Pokemon sprite
-            embed.set_image(url="attachment://sprite.png")
+            if file != None:
+                embed.set_image(url="attachment://sprite.png")
 
             # Serebii URL
             embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
@@ -81,3 +89,4 @@ class PokemonInfo(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(PokemonInfo(bot))
+    print("PokemonInfo cog is loaded")

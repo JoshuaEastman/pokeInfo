@@ -1,7 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-from utils.pokemonInfoUtil import get_pokemon_data, match_api_naming, generate_stat_bar
+from utils.pokemonInfoUtil import get_pokemon_data, match_api_naming
 
 min_max_text = "Min values are calculated with hindering nature, 0 IVs, and 0 EVs. Max values are calculated with beneficial nature, 31 IVs, and 252 EVs."
 
@@ -57,3 +57,4 @@ class PokemonStats(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(PokemonStats(bot))
+    print("PokemonStats cog is loaded")
