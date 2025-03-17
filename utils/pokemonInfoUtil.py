@@ -90,6 +90,7 @@ async def get_pokemon_data(pokemon_name):
 
             # Parse response for information
             pokemon_info = {
+                "base_id": data["species"]["url"].rstrip("/").split("/")[-1],
                 "name": data["name"].capitalize(),
                 "id": data["id"],
                 "height": data["height"] / 10,  # Convert dm to meters
