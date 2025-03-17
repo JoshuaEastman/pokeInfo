@@ -27,19 +27,8 @@ class PokemonInfo(commands.Cog):
                 await ctx.send(f"Pokemon '{pokemon_name}' not found.")
                 return
 
-            # Create the Serebii URL dynamically
-            gen = pokemon["generation"]
-            match gen:
-                case "I" | "II" | "III" | "IV" | "V" | "VI":
-                    serebii_url = f"https://www.serebii.net/pokedex-xy/{pokemon['id']:03d}.shtml"
-                case "VII":
-                    serebii_url = f"https://www.serebii.net/pokedex-sm/{pokemon['id']:03d}.shtml"
-                case "VIII":
-                    serebii_url = f"https://www.serebii.net/pokedex-swsh/{pokemon['id']:03d}.shtml"
-                case "IX":
-                    serebii_url = f"https://www.serebii.net/pokedex-sv/{pokemon['id']:03d}.shtml"
-                case _:
-                    serebii_url = f"https://www.serebii.net" # Default to Serebii homepage
+            # Create url from base_id
+            database_url = f"https://pokemondb.net/pokedex/{pokemon['base_id']}"
 
             # Merge sprites
             merged_image = await merge_sprites(pokemon["id"])
@@ -51,7 +40,7 @@ class PokemonInfo(commands.Cog):
             # Create a discord embed
             embed = discord.Embed(
                 title=f"#{pokemon['id']} - {pokemon['name']}",
-                url=serebii_url,
+                url=database_url,
                 color=discord.Color.blue(),
             )
             embed.add_field(name="Generation", value=f"Gen {pokemon['generation']}", inline=True)
@@ -80,7 +69,7 @@ class PokemonInfo(commands.Cog):
                 embed.set_image(url="attachment://sprite.png")
 
             # Serebii URL
-            embed.add_field(name="More Info", value=f"[Serebii Entry]({serebii_url})", inline=False)
+            embed.add_field(name="More Info", value=f"[Pokemon Database]({database_url})", inline=False)
 
             await channel.send(embed=embed, file=file, delete_after=(60*5)) # Delete message after 5 minutes
             await channel.send("This message will self-destruct in 5 minutes.", delete_after=(60*5))
