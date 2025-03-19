@@ -2,6 +2,7 @@ import os
 import discord
 import asyncio
 from discord.ext import commands
+from utils.envCheck import load_env
 
 class Admin(commands.Cog):
     def __init__(self, bot):
@@ -10,10 +11,10 @@ class Admin(commands.Cog):
     @commands.command(name='clearuser', help='Clears messages from a specific user')
     @commands.has_permissions(manage_messages=True)
     async def clearuser(self, ctx, user: discord.User, limit: int=1000):
-        if os.getenv('PERSONAL_USER_ID') is None:
-            allowed_user_id = os.environ.get('PERSONAL_USER_ID')
-        else:
+        if load_env():
             allowed_user_id = os.getenv('PERSONAL_USER_ID')
+        else:
+            allowed_user_id = os.environ['PERSONAL_USER_ID']
             
         if ctx.author.id == int(allowed_user_id):
             # Avoid rate limits by processing in batches

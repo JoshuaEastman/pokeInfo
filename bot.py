@@ -10,8 +10,8 @@ if load_env():
         TOKEN = os.getenv('TESTING_TOKEN')
 else:
     if os.environ.get('BOT_ENV') == 'production':
-        TOKEN = os.environ.get('DISCORD_TOKEN')
-        SOME_VAR = os.environ.get('SOME_VAR')
+        TOKEN = os.environ['DISCORD_TOKEN']
+        SOME_VAR = os.environ['SOME_VAR']
         print("Some var: ", SOME_VAR)
 
 # Discord Bot Config
