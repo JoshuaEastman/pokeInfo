@@ -4,13 +4,9 @@ from discord.ext import commands
 from utils.envCheck import load_env
 
 if load_env():
-    if os.getenv('BOT_ENV') == 'production':
-        TOKEN = os.getenv('DISCORD_TOKEN')
-    else:
-        TOKEN = os.getenv('TESTING_TOKEN')
+    TOKEN = os.getenv('DISCORD_TOKEN')
 else:
-    if os.environ['BOT_ENV'] == 'production':
-        TOKEN = os.environ['DISCORD_TOKEN']
+    TOKEN = os.environ['DISCORD_TOKEN']
 
 # Discord Bot Config
 intents = discord.Intents.default()

@@ -8,15 +8,11 @@ class PokemonInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         if load_env():
-            if os.getenv('BOT_ENV') == 'production':
-                self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
-            else:
-                self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
+            self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
         else:
-            if os.environ['BOT_ENV'] == 'production':
-                channel_value = os.environ['CMDS_CHANNEL_ID']
-                clean_channel_value = channel_value.strip('"')
-                self.channel_id = int(clean_channel_value)
+            channel_value = os.environ['CMDS_CHANNEL_ID']
+            clean_channel_value = channel_value.strip('"')
+            self.channel_id = int(clean_channel_value)
 
     # Command to get abilities of a Pokémon 
     @commands.command(name="pokeinfo", help=" - Enter ~pokeinfo and name a pokemon to get a brief description of that pokemon. Example: ~pokeinfo pikachu")
