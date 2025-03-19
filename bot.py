@@ -9,7 +9,7 @@ if load_env():
     else:
         TOKEN = os.getenv('TESTING_TOKEN')
 else:
-    if os.environ.get('BOT_ENV') == 'production':
+    if os.environ['BOT_ENV'] == 'production':
         TOKEN = os.environ['DISCORD_TOKEN']
         SOME_VAR = os.environ['SOME_VAR']
         print("Some var: ", SOME_VAR)
