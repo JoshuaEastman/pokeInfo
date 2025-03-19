@@ -2,14 +2,19 @@ import os
 import discord
 from discord.ext import commands
 from utils.pokemonInfoUtil import get_pokemon_data, merge_sprites, match_api_naming
+from utils.envCheck import load_env
 
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        if os.getenv('BOT_ENV') == 'production':
-            self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
+        if load_env():
+            if os.getenv('BOT_ENV') == 'production':
+                self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
+            else:
+                self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
         else:
-            self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
+            if os.getenv('BOT_ENV') == 'production':
+                self.channel_id = int(os.environ.get('CMDS_CHANNEL_ID'))
 
     # Command to get abilities of a Pokémon 
     @commands.command(name="pokeinfo", help=" - Enter ~pokeinfo and name a pokemon to get a brief description of that pokemon. Example: ~pokeinfo pikachu")

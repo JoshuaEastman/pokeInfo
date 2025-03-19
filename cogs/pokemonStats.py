@@ -2,16 +2,21 @@ import os
 import discord
 from discord.ext import commands
 from utils.pokemonInfoUtil import get_pokemon_data, match_api_naming
+from utils.envCheck import load_env
 
 min_max_text = "Min values are calculated with hindering nature, 0 IVs, and 0 EVs. Max values are calculated with beneficial nature, 31 IVs, and 252 EVs."
 
 class PokemonStats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        if os.getenv('BOT_ENV') == 'production':
-            self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
+        if load_env():
+            if os.getenv('BOT_ENV') == 'production':
+                self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
+            else:
+                self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
         else:
-            self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
+            if os.getenv('BOT_ENV') == 'production':
+                self.channel_id = int(os.environ.get('CMDS_CHANNEL_ID'))
 
         # Command to get the base stats of a Pokemon
     @commands.command(name="pokestats", help=" - Enter ~pokestats and name of a pokemon to get the base stats for that pokemon. Example: ~pokestats pikachu.")
