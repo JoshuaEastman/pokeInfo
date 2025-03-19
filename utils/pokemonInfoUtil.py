@@ -1,5 +1,4 @@
 from PIL import Image, UnidentifiedImageError
-import discord
 import aiohttp
 import io
 import re
