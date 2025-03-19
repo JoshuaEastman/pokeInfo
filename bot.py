@@ -1,16 +1,16 @@
 import os
 import discord
 from discord.ext import commands
+from utils.envCheck import load_env
 
-dotenv_path = '.env'
-if os.path.exists(".env"):
-    from dotenv import load_dotenv
-    load_dotenv(dotenv_path)
-
-if os.getenv('BOT_ENV') == 'production':
-    TOKEN = os.getenv('DISCORD_TOKEN')
+if load_env():
+    if os.getenv('BOT_ENV') == 'production':
+        TOKEN = os.getenv('DISCORD_TOKEN')
+    else:
+        TOKEN = os.getenv('TESTING_TOKEN')
 else:
-    TOKEN = os.getenv('TESTING_TOKEN')
+    if os.environ.get('BOT_ENV') == 'production':
+        TOKEN = os.environ.get('DISCORD_TOKEN')
 
 # Discord Bot Config
 intents = discord.Intents.default()

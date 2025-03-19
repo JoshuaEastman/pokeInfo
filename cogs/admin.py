@@ -10,7 +10,11 @@ class Admin(commands.Cog):
     @commands.command(name='clearuser', help='Clears messages from a specific user')
     @commands.has_permissions(manage_messages=True)
     async def clearuser(self, ctx, user: discord.User, limit: int=1000):
-        allowed_user_id = os.getenv('PERSONAL_USER_ID')
+        if os.getenv('PERSONAL_USER_ID') is None:
+            allowed_user_id = os.environ.get('PERSONAL_USER_ID')
+        else:
+            allowed_user_id = os.getenv('PERSONAL_USER_ID')
+            
         if ctx.author.id == int(allowed_user_id):
             # Avoid rate limits by processing in batches
             deleted = 0
