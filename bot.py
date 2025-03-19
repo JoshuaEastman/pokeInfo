@@ -11,8 +11,6 @@ if load_env():
 else:
     if os.environ['BOT_ENV'] == 'production':
         TOKEN = os.environ['DISCORD_TOKEN']
-        SOME_VAR = os.environ['SOME_VAR']
-        print("Some var: ", SOME_VAR)
 
 # Discord Bot Config
 intents = discord.Intents.default()
