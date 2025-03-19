@@ -2,7 +2,6 @@ import discord
 import random
 from discord.ext import commands
 from discord.ui import Button, View
-from utils.jokes import get_joke
 
 class General(commands.Cog):
     def __init__(self, bot):
@@ -20,12 +19,6 @@ class General(commands.Cog):
     async def coinflip(self, ctx):
         coin = random.choice(['Heads', 'Tails'])
         await ctx.send(f'{coin}!')
-
-    @commands.command(name='joke', help='Tells a joke')
-    async def joke(self, ctx):
-        joke = await get_joke()
-        await ctx.send(joke)
-
 
     # @commands.command(name='embed_buttons', help='Sends an embed with multiple buttons')
     # async def embed_buttons(self, ctx):
