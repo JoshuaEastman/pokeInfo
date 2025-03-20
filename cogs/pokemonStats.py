@@ -10,15 +10,11 @@ class PokemonStats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         if load_env():
-            if os.getenv('BOT_ENV') == 'production':
-                self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
-            else:
-                self.channel_id = int(os.getenv('PERSONAL_CHANNEL_ID'))
+            self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
         else:
-            if os.environ['BOT_ENV'] == 'production':
-                channel_value = os.environ['CMDS_CHANNEL_ID']
-                clean_channel_value = channel_value.strip('"')
-                self.channel_id = int(clean_channel_value)
+            channel_value = os.environ['CMDS_CHANNEL_ID']
+            clean_channel_value = channel_value.strip('"')
+            self.channel_id = int(clean_channel_value)
 
         # Command to get the base stats of a Pokemon
     @commands.command(name="pokestats", help=" - Enter ~pokestats and name of a pokemon to get the base stats for that pokemon. Example: ~pokestats pikachu.")

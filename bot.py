@@ -4,13 +4,9 @@ from discord.ext import commands
 from utils.envCheck import load_env
 
 if load_env():
-    if os.getenv('BOT_ENV') == 'production':
-        TOKEN = os.getenv('DISCORD_TOKEN')
-    else:
-        TOKEN = os.getenv('TESTING_TOKEN')
+    TOKEN = os.getenv('DISCORD_TOKEN')
 else:
-    if os.environ['BOT_ENV'] == 'production':
-        TOKEN = os.environ['DISCORD_TOKEN']
+    TOKEN = os.environ['DISCORD_TOKEN']
 
 # Discord Bot Config
 intents = discord.Intents.default()
@@ -30,7 +26,7 @@ async def load_cogs():
 
 @bot.event
 async def on_ready():
-    # Uncomment this line to make the bot invisible and offline
+    # Uncomment the below line to make the bot invisible and offline
     # await bot.change_presence(status=discord.Status.invisible)
     print(f'{bot.user.name} has connected to Discord!')
 
