@@ -23,6 +23,9 @@ async def get_joke(type=None):
             async with session.get(f"{JOKE_API_URL}") as response:
                 if response.status == 200:
                     joke_data = await response.json()
-                    return f"{joke_data['setup']}\n{joke_data['delivery']}"
+                    if joke_data["type"] == "single":
+                        return joke_data["joke"]
+                    elif joke_data["type"] == "twopart":
+                        return f"{joke_data['setup']}\n{joke_data['delivery']}"
                 else:
                     return "Failed to fetch a joke. Please try again later."
