@@ -18,7 +18,6 @@ class PokemonStats(commands.Cog):
 
         # Command to get the base stats of a Pokemon
     @commands.command(name="pokestats", help=" - Enter ~pokestats and name of a pokemon to get the base stats for that pokemon. Example: ~pokestats pikachu.")
-    @commands.has_permissions(manage_messages=True)
     async def pokestats(self, ctx, *, pokemon_name):
         if ctx.channel.id == self.channel_id:
             channel = self.bot.get_channel(self.channel_id)
@@ -56,7 +55,6 @@ class PokemonStats(commands.Cog):
 
             await channel.send(embed=embed, delete_after=(60*5)) # Delete message after 5 minutes
             await channel.send("This message will self-destruct in 5 minutes.", delete_after=(60*5))
-            await ctx.message.delete()
 
 async def setup(bot):
     await bot.add_cog(PokemonStats(bot))
