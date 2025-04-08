@@ -54,7 +54,6 @@ class PokemonStats(commands.Cog):
             embed.set_thumbnail(url=f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{pokemon['id']}.png")
 
             await channel.send(embed=embed, delete_after=(60*5)) # Delete message after 5 minutes
-            await channel.send("This message will self-destruct in 5 minutes.", delete_after=(60*5))
 
 async def setup(bot):
     await bot.add_cog(PokemonStats(bot))
