@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from utils.pokemonInfoUtil import get_pokemon_data, merge_sprites, match_api_naming
 from utils.envCheck import load_env
+from views.pokemonInfoViews import InfoView
 
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
@@ -10,71 +11,30 @@ class PokemonInfo(commands.Cog):
         if load_env():
             self.channel_id = int(os.getenv('CMDS_CHANNEL_ID'))
         else:
-            channel_value = os.environ['CMDS_CHANNEL_ID']
-            clean_channel_value = channel_value.strip('"')
+            clean_channel_value = os.environ['CMDS_CHANNEL_ID'].strip('"')
             self.channel_id = int(clean_channel_value)
 
-    # Command to get abilities of a Pokémon 
-    @commands.command(name="pokeinfo", help=" - Enter ~pokeinfo and name a pokemon to get a brief description of that pokemon. Example: ~pokeinfo pikachu")
+    @commands.command(name="pokeinfo", help="Get Pokémon info and stats with toggle buttons. Example: ~pokeinfo pikachu")
     async def pokeinfo(self, ctx, *, pokemon_name):
-        if ctx.channel.id == self.channel_id:
-            channel = self.bot.get_channel(self.channel_id)
+        if ctx.channel.id != self.channel_id:
+            return
 
-            # Match the Pokémon name to the API naming convention
-            pokemon_api_name = match_api_naming(pokemon_name)
+        # Normalize Pokémon name for API
+        pokemon_api_name = match_api_naming(pokemon_name)
+        pokemon = await get_pokemon_data(pokemon_api_name)
 
-            # Fetch and display information about a Pokemon
-            pokemon = await get_pokemon_data(pokemon_api_name)
-            if not pokemon:
-                await ctx.send(f"Pokemon '{pokemon_name}' not found.")
-                return
+        if not pokemon:
+            await ctx.send(f"Pokemon '{pokemon_name}' not found.")
+            return
 
-            # Create url from base_id
-            database_url = f"https://pokemondb.net/pokedex/{pokemon['base_id']}"
+        # Merge front/back sprites if available
+        merged_image = await merge_sprites(pokemon["id"])
+        file = discord.File(merged_image, filename="sprite.png") if merged_image else None
 
-            # Merge sprites
-            merged_image = await merge_sprites(pokemon["id"])
-            if merged_image != None:
-                file = discord.File(merged_image, filename="sprite.png")
-            else:
-                file = None
+        view = InfoView(pokemon, file=file, user_id=ctx.author.id)
+        embed = view.embed
 
-            # Create a discord embed
-            embed = discord.Embed(
-                title=f"#{pokemon['id']} - {pokemon['name']}",
-                url=database_url,
-                color=discord.Color.blue(),
-            )
-            embed.add_field(name="Generation", value=f"Gen {pokemon['generation']}", inline=True)
-            embed.add_field(name="Types", value=", ".join(pokemon["types"]), inline=True)
-            embed.add_field(name="Height", value=f"{pokemon['height']} m", inline=True)
-            embed.add_field(name="Weight", value=f"{pokemon['weight']} kg", inline=True)
-            
-            # Add regular abilities
-            embed.add_field(name="Abilities", value=", ".join(pokemon["abilities"]), inline=True)
-
-            # Add hidden abilities
-            if pokemon["hidden_abilities"]:
-                embed.add_field(name="Hidden Abilities", value=", ".join(pokemon["hidden_abilities"]), inline=True)
-
-            # Display Pokémon Varieties
-            if pokemon["varieties"]:
-                varieties_display = ", ".join(pokemon["varieties"])
-                embed.add_field(name="Varieties", value=varieties_display, inline=False)
-
-            # Only show first 10 moves
-            moves_preview = ", ".join(pokemon["moves"][:10]) + "..."
-            embed.add_field(name="Moves (Sample)", value=moves_preview, inline=False)
-
-            # Pokemon sprite
-            if file != None:
-                embed.set_image(url="attachment://sprite.png")
-
-            # Serebii URL
-            embed.add_field(name="More Info", value=f"[Pokemon Database]({database_url})", inline=False)
-
-            await channel.send(embed=embed, file=file, delete_after=(60*5)) # Delete message after 5 minutes
-
+        await ctx.send(embed=embed, file=file, view=view, delete_after=(60 * 5))  # Auto delete after 5 min
 
 async def setup(bot):
     await bot.add_cog(PokemonInfo(bot))
