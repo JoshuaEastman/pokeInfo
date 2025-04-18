@@ -2,15 +2,12 @@ import os
 import discord
 import logging
 from discord.ext import commands
-from utils.envCheck import load_env
+from config.config import config
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-if load_env():
-    TOKEN = os.getenv('DISCORD_TOKEN')
-else:
-    TOKEN = os.environ['DISCORD_TOKEN']
+TOKEN = config.discord_token
 
 # Discord Bot Config
 intents = discord.Intents.default()
