@@ -1,9 +1,12 @@
 import os
 import discord
+import logging
 from discord.ext import commands
 from utils.pokemonInfoUtil import get_pokemon_data, merge_sprites, match_api_naming
 from utils.envCheck import load_env
 from views.pokemonInfoViews import InfoView
+
+logger = logging.getLogger(__name__)
 
 class PokemonInfo(commands.Cog):
     def __init__(self, bot):
@@ -38,4 +41,4 @@ class PokemonInfo(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(PokemonInfo(bot))
-    print("PokemonInfo cog is loaded")
+    logger.info("PokemonInfo cog loaded")

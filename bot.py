@@ -1,7 +1,11 @@
 import os
 import discord
+import logging
 from discord.ext import commands
 from utils.envCheck import load_env
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 if load_env():
     TOKEN = os.getenv('DISCORD_TOKEN')
@@ -28,7 +32,7 @@ async def load_cogs():
 async def on_ready():
     # Uncomment the below line to make the bot invisible and offline
     # await bot.change_presence(status=discord.Status.invisible)
-    print(f'{bot.user.name} has connected to Discord!')
+    logger.info(f'Logged in as {bot.user.name} - {bot.user.id}')
 
 async def setup_hook():
     await load_cogs()
