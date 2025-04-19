@@ -7,7 +7,7 @@ from discord.ext import commands
 from config.config import config
 from utils.tts_utils import generate_tts_audio
 
-personal_user_id = config.personal_user_id
+personal_user_id = int(config.personal_user_id)
 logger = logging.getLogger(__name__)
 
 class TTS(commands.Cog):
