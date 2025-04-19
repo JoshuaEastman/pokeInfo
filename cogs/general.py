@@ -1,5 +1,8 @@
 import random
+import logging
 from discord.ext import commands
+
+logger = logging.getLogger(__name__)
 
 class General(commands.Cog):
     def __init__(self, bot):
@@ -20,4 +23,4 @@ class General(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(General(bot))
-    print("General cog is loaded")
+    logger.info("General cog loaded")

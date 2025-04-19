@@ -1,12 +1,14 @@
 import os
 import discord
+import logging
 from discord.ext import commands
-from utils.envCheck import load_env
+from config.config import config
+from help.help import CustomHelpCommand
 
-if load_env():
-    TOKEN = os.getenv('DISCORD_TOKEN')
-else:
-    TOKEN = os.environ['DISCORD_TOKEN']
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+TOKEN = config.discord_token
 
 # Discord Bot Config
 intents = discord.Intents.default()
@@ -14,7 +16,7 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-bot = commands.Bot(command_prefix='~', intents=intents)
+bot = commands.Bot(command_prefix='~', intents=intents, help_command=CustomHelpCommand())
 
 # Load Cogs (command categories)
 COG_FOLDER = "cogs"
@@ -28,7 +30,7 @@ async def load_cogs():
 async def on_ready():
     # Uncomment the below line to make the bot invisible and offline
     # await bot.change_presence(status=discord.Status.invisible)
-    print(f'{bot.user.name} has connected to Discord!')
+    logger.info(f'Logged in as {bot.user.name} - {bot.user.id}')
 
 async def setup_hook():
     await load_cogs()
