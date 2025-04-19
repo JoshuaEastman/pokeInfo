@@ -1,9 +1,14 @@
-import discord
-from discord.ext import commands
-from utils.tts_utils import generate_tts_audio
-from pydub import AudioSegment
-import tempfile
+import logging
 import asyncio
+import discord
+import tempfile
+from pydub import AudioSegment
+from discord.ext import commands
+from config.config import config
+from utils.tts_utils import generate_tts_audio
+
+personal_user_id = config.personal_user_id
+logger = logging.getLogger(__name__)
 
 class TTS(commands.Cog):
     def __init__(self, bot):
@@ -11,6 +16,11 @@ class TTS(commands.Cog):
 
     @commands.command(name="tts")
     async def tts(self, ctx, channel_name: str = None, *, message: str = None):
+        if ctx.author.id != personal_user_id:
+            await ctx.send("You do not have permission to use this command.")
+            logger.info(f"User {ctx.author} tried to use TTS command but is not authorized.")
+            return
+        
         if not message:
             await ctx.send("Please include a message to speak.")
             return
@@ -51,12 +61,18 @@ class TTS(commands.Cog):
         await asyncio.sleep(1)  # Wait for the bot to connect to the channel
 
         vc.play(discord.FFmpegPCMAudio(wav_temp.name))
+        logger.info(f"Playing TTS in {target_channel.name} for user {ctx.author}.")
 
         while vc.is_playing():
             await asyncio.sleep(1)
 
     @commands.command(name="leave")
     async def leave(self, ctx):
+        if ctx.author.id != personal_user_id:
+            await ctx.send("You do not have permission to use this command.")
+            logger.info(f"User {ctx.author} tried to use leave command but is not authorized.")
+            return
+        
         if ctx.voice_client:
             await ctx.voice_client.disconnect()
         else:
