@@ -25,13 +25,16 @@ if check_env():
     logger.info("Environment variables loaded from .env file.")
     discord_token = os.getenv("DISCORD_TOKEN")
     openai_api_key = os.getenv("OPENAI_API_KEY")
+    personal_user_id = os.getenv("PERSONAL_USER_ID")
 else:
     logger.warning("Environment variables loaded from system environment.")
     discord_token = os.environ["DISCORD_TOKEN"]
     openai_api_key = os.environ["OPENAI_API_KEY"]
+    personal_user_id = os.environ["PERSONAL_USER_ID"]
 
 
 config = DotDict({
     "discord_token": discord_token,
     "openai_api_key": openai_api_key,
+    "personal_user_id": personal_user_id
 })
