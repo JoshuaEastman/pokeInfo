@@ -3,6 +3,7 @@ import discord
 import logging
 from discord.ext import commands
 from config.config import config
+from help.help import CustomHelpCommand
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-bot = commands.Bot(command_prefix='~', intents=intents)
+bot = commands.Bot(command_prefix='~', intents=intents, help_command=CustomHelpCommand())
 
 # Load Cogs (command categories)
 COG_FOLDER = "cogs"

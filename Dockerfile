@@ -4,6 +4,14 @@ FROM python:3.12-slim
 # Set the working directory
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy only requirements first to leverage Docker's layer caching
 COPY requirements.txt .
 
