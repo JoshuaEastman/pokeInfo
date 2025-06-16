@@ -79,5 +79,5 @@ MIT License
 
 ## Author
 
-Joshua Eastman - contact@joshuaeastman.dev
+Joshua Eastman — [contact@joshuaeastman.dev](mailto:contact@joshuaeastman.dev)
 
