@@ -12,7 +12,7 @@ def match_api_naming(map_string):
     # 2. Removes or replaces dots with hyphens.
     map_string = re.sub(r'\s+', '-', map_string)  # Replace one or more spaces with a single hyphen
     map_string = re.sub(r'\.+', '', map_string)   # Remove any dots (you could replace with hyphen if needed)
-    
+
     # Handle gender symbols and accented characters (e.g., '♂' -> '-m', 'é' -> 'e')
     map_string = re.sub(r'♂', '-m', map_string)  # Replace male symbol
     map_string = re.sub(r'♀', '-f', map_string)  # Replace female symbol
@@ -48,7 +48,7 @@ def generate_stat_bar(stat_value, max_value=190, width=20):
         block_emoji = "🟩"  # High stat (Light Green)
     else:
         block_emoji = "🟦"  # Max stat (Teal)
-    
+
 
     bar = block_emoji * filled_blocks + "⬜" * empty_blocks  # Use white square for empty space
     return bar
@@ -59,7 +59,7 @@ async def get_pokemon_data(pokemon_name):
         async with session.get(f"{POKEAPI_BASE_URL}/{pokemon_name.lower()}") as response:
             if response.status != 200:
                 return None # Pokemon not found
-            
+
             data = await response.json()
 
             # Fetch species data directly from base data
@@ -68,7 +68,7 @@ async def get_pokemon_data(pokemon_name):
             async with session.get(species_url) as species_response:
                 if species_response.status != 200:
                     return None # Species not found
-                
+
                 species_data = await species_response.json()
 
             # Parse varieties
@@ -121,7 +121,7 @@ async def get_pokemon_data(pokemon_name):
                     pokemon_info["abilities"].append(ability_name)
 
             return pokemon_info
-        
+
 async def merge_sprites(pokemon_id):
     try:
         """Merge regular and shiny sprites of a Pokemon"""
@@ -154,7 +154,7 @@ async def merge_sprites(pokemon_id):
         img_bytes.seek(0)
 
         return img_bytes
-    
+
     except UnidentifiedImageError:
         print("Error: Failed to identify image format. Check the image url or the response data.")
         return None
@@ -162,4 +162,3 @@ async def merge_sprites(pokemon_id):
         print(f"Error: An error occurred while processing the sprites: {e}")
         return None
 
-    

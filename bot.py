@@ -2,13 +2,12 @@ import os
 import discord
 import logging
 from discord.ext import commands
-from config.config import config
-from help.help import CustomHelpCommand
+from utils.config import config
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-TOKEN = config.discord_token
+TOKEN = config.DISCORD_TOKEN
 
 # Discord Bot Config
 intents = discord.Intents.default()
@@ -16,7 +15,7 @@ intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-bot = commands.Bot(command_prefix='~', intents=intents, help_command=CustomHelpCommand())
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Load Cogs (command categories)
 COG_FOLDER = "cogs"
