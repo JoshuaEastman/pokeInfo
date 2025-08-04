@@ -20,7 +20,7 @@
 ## Usage
 
 **Run Locally** *Written with Python 3.13.5*
-```
+```bash
 # Clone and enter repository
 git clone https://github.com/RealBeastman/pokeInfo.git
 cd pokeInfo
