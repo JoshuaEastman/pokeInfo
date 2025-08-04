@@ -10,17 +10,16 @@
 
 ## Features
 
-- Command-based Pokémon lookup (e.g. ~pokeinfo pikachu)
+- Command-based Pokémon lookup (e.g. !pokeinfo pikachu)
 - Uses PokéAPI for real-time data
 - Embed-rich formatting for stats and abilities
 - Modular command structure using discord.ext.commands.Cog
-- Voice and TTS capabilities (experimental)
 
 ---
 
 ## Usage
 
-**Run Locally** *Written with Python 3.10*
+**Run Locally** *Written with Python 3.13.5*
 ```
 # Clone and enter repository
 git clone https://github.com/RealBeastman/pokeInfo.git
@@ -35,8 +34,6 @@ pip install -r requirements.txt
 
 # Create a .env with the following variables
 DISCORD_TOKEN=your_discord_token
-OPENAI_API_KEY=your_openai_api_key
-PERSONAL_USER_ID=your_discord_user_id
 
 # Start the bot
 python bot.py
@@ -48,11 +45,9 @@ python bot.py
 
 **Example Commands**
 
-`~help`
+`!help`
 
-`~pokeinfo bulbasaur`
-
-`~tts General This is a "spoken" message` *Checks against `personal_user_id` for permission*
+`!pokeinfo bulbasaur`
 
 ---
 
@@ -60,14 +55,12 @@ python bot.py
 
 - Python 3.10+
 - `discord.py`
-- `aiohttp`
-- `.env` file with specified credentials
 
 ---
 
 ## Status
 
-**Active:** A side-project I like to dip into occasionally
+**Active:** No longer in active development.
 
 ---
 
